@@ -343,7 +343,8 @@ def main():
     st.markdown("---")
     st.subheader("Observed & forecast PM2.5")
 
-    obs = pm25_df["pm25"].last("24h")
+    cutoff = pm25_df.index[-1] - pd.Timedelta(hours=24)
+    obs = pm25_df["pm25"][pm25_df.index >= cutoff]
 
     # Forecast points
     fc_times = [
