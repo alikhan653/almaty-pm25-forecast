@@ -89,8 +89,11 @@ def fetch_pm25_history(hours: int = 48) -> pd.DataFrame | None:
         return None
 
     try:
-        from datetime import timedelta
         from openaq import OpenAQ
+
+        now = pd.Timestamp.now("UTC")
+        date_from = (now - pd.Timedelta(hours=hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        date_to = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         client = OpenAQ(api_key=key)
         try:
@@ -102,35 +105,31 @@ def fetch_pm25_history(hours: int = 48) -> pd.DataFrame | None:
                 limit=200,
             )
             locations = list(resp.results)
-        finally:
-            client.close()
 
-        if not locations:
-            st.warning("No OpenAQ sensors found near Almaty.")
-            return None
+            if not locations:
+                st.warning("No OpenAQ sensors found near Almaty.")
+                return None
 
-        # Collect sensor IDs
-        sensor_ids = []
-        for loc in locations:
-            for sensor in (loc.sensors or []):
-                param = sensor.parameter
-                if param and param.id == 2:
-                    sensor_ids.append(sensor.id)
+            # Collect (sensor_id, location_datetime_last) and sort most-recent first
+            # so that active sensors are queried before stale ones
+            sensor_with_dates = []
+            for loc in locations:
+                last = loc.datetime_last.utc if loc.datetime_last else "2000-01-01"
+                for sensor in (loc.sensors or []):
+                    param = sensor.parameter
+                    if param and param.id == 2:
+                        sensor_with_dates.append((sensor.id, last))
+            sensor_with_dates.sort(key=lambda x: x[1], reverse=True)
+            sensor_ids = [sid for sid, _ in sensor_with_dates]
 
-        if not sensor_ids:
-            return None
+            if not sensor_ids:
+                return None
 
-        # 2. Fetch hourly measurements for up to 30 sensors
-        now = pd.Timestamp.utcnow()
-        date_from = (now - pd.Timedelta(hours=hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        date_to = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        records = []
-        client2 = OpenAQ(api_key=key)
-        try:
+            # 2. Fetch hourly measurements for up to 30 most-recently-active sensors
+            records = []
             for sid in sensor_ids[:30]:
                 try:
-                    mresp = client2.measurements.list(
+                    mresp = client.measurements.list(
                         sensors_id=sid,
                         data="hours",
                         datetime_from=date_from,
@@ -146,7 +145,7 @@ def fetch_pm25_history(hours: int = 48) -> pd.DataFrame | None:
                 except Exception:
                     continue
         finally:
-            client2.close()
+            client.close()
 
         if not records:
             return None
