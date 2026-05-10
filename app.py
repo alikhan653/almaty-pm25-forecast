@@ -79,57 +79,74 @@ def _openaq_key() -> str | None:
 
 @st.cache_data(ttl=REFRESH_SEC)
 def fetch_pm25_history(hours: int = 48) -> pd.DataFrame | None:
-    """Fetch recent city-median PM2.5 from OpenAQ v3."""
+    """Fetch recent city-median PM2.5 from OpenAQ v3 using the official SDK."""
     key = _openaq_key()
     if not key:
+        st.warning(
+            "OPENAQ_API_KEY is not set. "
+            "Add it in Streamlit Cloud → App settings → Secrets."
+        )
         return None
 
-    headers = {"X-API-Key": key}
-    # Get sensors near Almaty
     try:
-        r = requests.get(
-            "https://api.openaq.org/v3/locations",
-            params={
-                "coordinates": f"{LAT},{LON}",
-                "radius": SEARCH_RADIUS_M,
-                "parameters_id": 2,  # PM2.5
-                "limit": 200,
-            },
-            headers=headers,
-            timeout=15,
-        )
-        r.raise_for_status()
-        locations = r.json().get("results", [])
+        from datetime import timedelta
+        from openaq import OpenAQ
+
+        client = OpenAQ(api_key=key)
+        try:
+            # 1. Find PM2.5 sensors near Almaty
+            resp = client.locations.list(
+                coordinates=(LAT, LON),
+                radius=SEARCH_RADIUS_M,
+                parameters_id=[2],
+                limit=200,
+            )
+            locations = list(resp.results)
+        finally:
+            client.close()
+
         if not locations:
+            st.warning("No OpenAQ sensors found near Almaty.")
             return None
 
-        # Fetch measurements for found sensors
+        # Collect sensor IDs
         sensor_ids = []
-        for loc in locations[:50]:  # cap to avoid rate limit
-            for sensor in loc.get("sensors", []):
-                if sensor.get("parameter", {}).get("id") == 2:
-                    sensor_ids.append(sensor["id"])
+        for loc in locations:
+            for sensor in (loc.sensors or []):
+                param = sensor.parameter
+                if param and param.id == 2:
+                    sensor_ids.append(sensor.id)
 
         if not sensor_ids:
             return None
 
+        # 2. Fetch hourly measurements for up to 30 sensors
+        now = pd.Timestamp.utcnow()
+        date_from = (now - pd.Timedelta(hours=hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        date_to = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+
         records = []
-        for sid in sensor_ids[:30]:
-            try:
-                r2 = requests.get(
-                    f"https://api.openaq.org/v3/sensors/{sid}/measurements/hourly",
-                    params={"limit": hours},
-                    headers=headers,
-                    timeout=10,
-                )
-                if r2.status_code == 200:
-                    for m in r2.json().get("results", []):
-                        records.append({
-                            "datetime_utc": m["period"]["datetimeFrom"]["utc"],
-                            "value": m["value"],
-                        })
-            except Exception:
-                continue
+        client2 = OpenAQ(api_key=key)
+        try:
+            for sid in sensor_ids[:30]:
+                try:
+                    mresp = client2.measurements.list(
+                        sensors_id=sid,
+                        data="hours",
+                        datetime_from=date_from,
+                        datetime_to=date_to,
+                        limit=hours,
+                    )
+                    for m in mresp.results:
+                        dt = None
+                        if m.period and m.period.datetime_from:
+                            dt = m.period.datetime_from.utc
+                        if dt is not None and m.value is not None:
+                            records.append({"datetime_utc": dt, "value": m.value})
+                except Exception:
+                    continue
+        finally:
+            client2.close()
 
         if not records:
             return None
@@ -144,7 +161,7 @@ def fetch_pm25_history(hours: int = 48) -> pd.DataFrame | None:
             .rename("pm25")
             .sort_index()
         )
-        return median.to_frame()
+        return median.to_frame() if not median.empty else None
 
     except Exception as e:
         st.warning(f"OpenAQ fetch error: {e}")
