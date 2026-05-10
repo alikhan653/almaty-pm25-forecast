@@ -77,9 +77,12 @@ def _openaq_key() -> str | None:
         return os.getenv("OPENAQ_API_KEY")
 
 
+_OPENAQ_BASE = "https://api.openaq.org/v3"
+
+
 @st.cache_data(ttl=REFRESH_SEC)
 def fetch_pm25_history(hours: int = 48) -> pd.DataFrame | None:
-    """Fetch recent city-median PM2.5 from OpenAQ v3 using the official SDK."""
+    """Fetch recent city-median PM2.5 from OpenAQ v3 REST API."""
     key = _openaq_key()
     if not key:
         st.warning(
@@ -88,64 +91,68 @@ def fetch_pm25_history(hours: int = 48) -> pd.DataFrame | None:
         )
         return None
 
+    headers = {"X-API-Key": key}
     try:
-        from openaq import OpenAQ
-
         now = pd.Timestamp.now("UTC")
         date_from = (now - pd.Timedelta(hours=hours)).strftime("%Y-%m-%dT%H:%M:%SZ")
         date_to = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        client = OpenAQ(api_key=key)
-        try:
-            # 1. Find PM2.5 sensors near Almaty
-            resp = client.locations.list(
-                coordinates=(LAT, LON),
-                radius=SEARCH_RADIUS_M,
-                parameters_id=[2],
-                limit=200,
-            )
-            locations = list(resp.results)
+        # 1. Find PM2.5 locations near Almaty, sorted by most recently updated
+        r = requests.get(
+            f"{_OPENAQ_BASE}/locations",
+            headers=headers,
+            params={
+                "coordinates": f"{LAT},{LON}",
+                "radius": SEARCH_RADIUS_M,
+                "parameters_id": 2,
+                "limit": 200,
+            },
+            timeout=20,
+        )
+        r.raise_for_status()
+        locations = r.json().get("results", [])
 
-            if not locations:
-                st.warning("No OpenAQ sensors found near Almaty.")
-                return None
+        if not locations:
+            st.warning("No OpenAQ sensors found near Almaty.")
+            return None
 
-            # Collect (sensor_id, location_datetime_last) and sort most-recent first
-            # so that active sensors are queried before stale ones
-            sensor_with_dates = []
-            for loc in locations:
-                last = loc.datetime_last.utc if loc.datetime_last else "2000-01-01"
-                for sensor in (loc.sensors or []):
-                    param = sensor.parameter
-                    if param and param.id == 2:
-                        sensor_with_dates.append((sensor.id, last))
-            sensor_with_dates.sort(key=lambda x: x[1], reverse=True)
-            sensor_ids = [sid for sid, _ in sensor_with_dates]
+        # Sort locations by datetimeLast descending so active sensors come first
+        locations.sort(
+            key=lambda loc: (loc.get("datetimeLast") or {}).get("utc") or "2000-01-01",
+            reverse=True,
+        )
 
-            if not sensor_ids:
-                return None
+        # Collect sensor IDs (most-recent-first order)
+        sensor_ids = []
+        for loc in locations:
+            for sensor in loc.get("sensors", []):
+                param = sensor.get("parameter", {})
+                if param.get("id") == 2:
+                    sensor_ids.append(sensor["id"])
 
-            # 2. Fetch hourly measurements for up to 30 most-recently-active sensors
-            records = []
-            for sid in sensor_ids[:30]:
-                try:
-                    mresp = client.measurements.list(
-                        sensors_id=sid,
-                        data="hours",
-                        datetime_from=date_from,
-                        datetime_to=date_to,
-                        limit=hours,
-                    )
-                    for m in mresp.results:
-                        dt = None
-                        if m.period and m.period.datetime_from:
-                            dt = m.period.datetime_from.utc
-                        if dt is not None and m.value is not None:
-                            records.append({"datetime_utc": dt, "value": m.value})
-                except Exception:
+        if not sensor_ids:
+            return None
+
+        # 2. Fetch hourly measurements for up to 30 most-recently-active sensors
+        records = []
+        for sid in sensor_ids[:30]:
+            try:
+                mr = requests.get(
+                    f"{_OPENAQ_BASE}/sensors/{sid}/hours",
+                    headers=headers,
+                    params={"datetime_from": date_from, "datetime_to": date_to, "limit": hours},
+                    timeout=15,
+                )
+                if mr.status_code != 200:
                     continue
-        finally:
-            client.close()
+                for m in mr.json().get("results", []):
+                    val = m.get("value")
+                    period = m.get("period", {})
+                    dt = (period.get("datetimeFrom") or {}).get("utc")
+                    if dt and val is not None:
+                        records.append({"datetime_utc": dt, "value": val})
+            except Exception:
+                continue
 
         if not records:
             return None
