@@ -1,0 +1,38 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets
+.env
+.env.local
+*.key
+
+# Data (large files, raw API dumps, SQLite db)
+data/raw/*
+data/processed/*
+data/*.db
+data/*.db-journal
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# ML artifacts — exclude large binaries but KEEP trained forecast models
+*.pkl
+models/*.bin
+# models/*.joblib is intentionally NOT ignored (small trained models for app)
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
