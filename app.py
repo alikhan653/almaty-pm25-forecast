@@ -286,11 +286,18 @@ def fetch_city_stations(lat: float, lon: float) -> pd.DataFrame:
     except Exception:
         return pd.DataFrame()
 
-    now    = pd.Timestamp.now("UTC")
-    cutoff = now - pd.Timedelta(hours=3)
-    rows   = []
+    now           = pd.Timestamp.now("UTC")
+    active_cutoff = now - pd.Timedelta(hours=48)   # accept sensors active in last 48 h
+    data_cutoff   = now - pd.Timedelta(hours=48)
+    rows          = []
 
-    for loc in locations:
+    # Sort by most recently active first
+    locations.sort(
+        key=lambda l: (l.get("datetimeLast") or {}).get("utc") or "2000-01-01",
+        reverse=True,
+    )
+
+    for loc in locations[:60]:
         coords = loc.get("coordinates") or {}
         slat   = coords.get("latitude")
         slon   = coords.get("longitude")
@@ -299,7 +306,7 @@ def fetch_city_stations(lat: float, lon: float) -> pd.DataFrame:
         name = loc.get("name") or loc.get("locality") or "Unknown"
 
         last_dt_str = (loc.get("datetimeLast") or {}).get("utc")
-        if last_dt_str and pd.to_datetime(last_dt_str, utc=True) < cutoff:
+        if last_dt_str and pd.to_datetime(last_dt_str, utc=True) < active_cutoff:
             continue
 
         for s in loc.get("sensors", []):
@@ -315,9 +322,9 @@ def fetch_city_stations(lat: float, lon: float) -> pd.DataFrame:
                     f"{_OPENAQ_BASE}/sensors/{sid}/hours",
                     headers=headers,
                     params={
-                        "datetime_from": cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "datetime_from": data_cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
                         "datetime_to":   now.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        "limit": 3,
+                        "limit": 6,
                     },
                     timeout=10,
                 )
@@ -327,6 +334,8 @@ def fetch_city_stations(lat: float, lon: float) -> pd.DataFrame:
                         if isinstance(m, dict) and m.get("value") is not None
                         and 0 <= m["value"] <= 500]
                 if not vals:
+                    # Fallback: add station at grey (pm25=0) so map still shows it
+                    rows.append({"name": name, "lat": slat, "lon": slon, "pm25": None})
                     continue
                 rows.append({"name": name, "lat": slat, "lon": slon,
                              "pm25": float(np.median(vals))})
@@ -340,7 +349,7 @@ def fetch_city_stations(lat: float, lon: float) -> pd.DataFrame:
     df = df.groupby("name", as_index=False).agg(
         {"lat": "first", "lon": "first", "pm25": "median"}
     )
-    return df.sort_values("pm25", ascending=False).reset_index(drop=True)
+    return df.sort_values("pm25", ascending=False, na_position="last").reset_index(drop=True)
 
 
 @st.cache_data(ttl=REFRESH_SEC)
@@ -727,49 +736,62 @@ def main():
                 st.warning(f"No active PM2.5 sensors found in {city_name}. "
                            "Coverage may be limited in this area.")
             else:
-                n_sensors  = len(city_df)
-                median_pm25 = float(city_df["pm25"].median())
-                color = aqi_color(median_pm25)
-                label = aqi_label(median_pm25)
+                n_sensors   = len(city_df)
+                with_data   = city_df.dropna(subset=["pm25"])
+                median_pm25 = float(with_data["pm25"].median()) if not with_data.empty else None
 
                 st.markdown("---")
-                st.metric("Active PM2.5 sensors", n_sensors)
-                st.markdown(
-                    f"<div style='text-align:left;padding:4px 0'>"
-                    f"<span style='font-size:0.9rem;color:#bbb'>Current median PM2.5</span><br>"
-                    f"<span style='font-size:2.4rem;font-weight:bold;color:{color}'>"
-                    f"{median_pm25:.0f} μg/m³</span><br>"
-                    f"<span style='font-size:0.85rem;color:{color}'>{label}</span>"
-                    f"</div>",
-                    unsafe_allow_html=True,
-                )
+                st.metric("PM2.5 sensors found", n_sensors)
+                st.metric("Sensors with recent data", len(with_data))
+
+                if median_pm25 is not None:
+                    color = aqi_color(median_pm25)
+                    label = aqi_label(median_pm25)
+                    st.markdown(
+                        f"<div style='text-align:left;padding:4px 0'>"
+                        f"<span style='font-size:0.9rem;color:#bbb'>Current median PM2.5</span><br>"
+                        f"<span style='font-size:2.4rem;font-weight:bold;color:{color}'>"
+                        f"{median_pm25:.0f} μg/m³</span><br>"
+                        f"<span style='font-size:0.85rem;color:{color}'>{label}</span>"
+                        f"</div>",
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.info("Sensor locations found but no recent hourly readings available.")
                 st.markdown("---")
                 st.markdown("**vs Almaty baseline**")
                 st.markdown(f"- Almaty: 192 sensors, {current_pm25:.0f} μg/m³ now")
-                st.markdown(f"- {city_name}: {n_sensors} sensors, {median_pm25:.0f} μg/m³ now")
+                pm25_str = f"{median_pm25:.0f} μg/m³" if median_pm25 else "no recent data"
+                st.markdown(f"- {city_name}: {n_sensors} sensors, {pm25_str}")
 
         with col_map2:
+            m2 = folium.Map(location=[clat, clon], zoom_start=11,
+                            tiles="CartoDB dark_matter")
             if not city_df.empty:
-                m2 = folium.Map(location=[clat, clon], zoom_start=11,
-                                tiles="CartoDB dark_matter")
-                if len(city_df) > 2:
+                with_data = city_df.dropna(subset=["pm25"])
+                # Heatmap only for stations with real readings
+                if len(with_data) > 2:
                     HeatMap(
-                        [[r.lat, r.lon, r.pm25] for r in city_df.itertuples()],
+                        [[r.lat, r.lon, r.pm25] for r in with_data.itertuples()],
                         radius=20, blur=30, min_opacity=0.3,
                         gradient={0.0: "#2ECC71", 0.33: "#F1C40F",
                                   0.66: "#E74C3C", 1.0: "#8E44AD"},
                     ).add_to(m2)
                 for row in city_df.itertuples():
-                    color = aqi_color(row.pm25)
+                    has_val = row.pm25 is not None and not (isinstance(row.pm25, float) and np.isnan(row.pm25))
+                    color   = aqi_color(row.pm25) if has_val else "#666666"
+                    tip     = f"{row.name}: {row.pm25:.0f} μg/m³" if has_val else f"{row.name}: no recent data"
                     folium.CircleMarker(
                         location=[row.lat, row.lon],
-                        radius=6, color=color, fill=True,
-                        fill_color=color, fill_opacity=0.85,
-                        tooltip=f"{row.name}: {row.pm25:.0f} μg/m³",
+                        radius=5, color=color, fill=True,
+                        fill_color=color, fill_opacity=0.8,
+                        tooltip=tip,
                     ).add_to(m2)
-                st_folium(m2, width=None, height=420, returned_objects=[])
             else:
-                st.markdown(f"*No sensor data available for {city_name}.*")
+                # No sensors at all - show city centre pin
+                folium.Marker(location=[clat, clon],
+                              tooltip=f"{city_name}: no sensors found").add_to(m2)
+            st_folium(m2, width=None, height=420, returned_objects=[])
 
         # Config snippet
         st.markdown("---")
