@@ -258,6 +258,91 @@ def fetch_stations_current() -> pd.DataFrame:
     return df.sort_values("pm25", ascending=False).reset_index(drop=True)
 
 
+OTHER_CITIES = [
+    ("Bishkek",  "Kyrgyzstan",   42.8700, 74.5900),
+    ("Tashkent", "Uzbekistan",   41.2995, 69.2401),
+    ("Astana",   "Kazakhstan",   51.1801, 71.4460),
+]
+
+
+@st.cache_data(ttl=REFRESH_SEC * 5)
+def fetch_city_stations(lat: float, lon: float) -> pd.DataFrame:
+    """Fetch current PM2.5 per-station for any city coordinates."""
+    key = _openaq_key()
+    if not key:
+        return pd.DataFrame()
+
+    headers = {"X-API-Key": key}
+    try:
+        r = requests.get(
+            f"{_OPENAQ_BASE}/locations",
+            headers=headers,
+            params={"coordinates": f"{lat},{lon}", "radius": 25000,
+                    "parameters_id": 2, "limit": 200},
+            timeout=20,
+        )
+        r.raise_for_status()
+        locations = r.json().get("results", [])
+    except Exception:
+        return pd.DataFrame()
+
+    now    = pd.Timestamp.now("UTC")
+    cutoff = now - pd.Timedelta(hours=3)
+    rows   = []
+
+    for loc in locations:
+        coords = loc.get("coordinates") or {}
+        slat   = coords.get("latitude")
+        slon   = coords.get("longitude")
+        if slat is None or slon is None:
+            continue
+        name = loc.get("name") or loc.get("locality") or "Unknown"
+
+        last_dt_str = (loc.get("datetimeLast") or {}).get("utc")
+        if last_dt_str and pd.to_datetime(last_dt_str, utc=True) < cutoff:
+            continue
+
+        for s in loc.get("sensors", []):
+            if not isinstance(s, dict):
+                continue
+            if (s.get("parameter") or {}).get("id") != 2:
+                continue
+            sid = s.get("id")
+            if not sid:
+                continue
+            try:
+                mr = requests.get(
+                    f"{_OPENAQ_BASE}/sensors/{sid}/hours",
+                    headers=headers,
+                    params={
+                        "datetime_from": cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "datetime_to":   now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "limit": 3,
+                    },
+                    timeout=10,
+                )
+                if mr.status_code != 200:
+                    continue
+                vals = [m["value"] for m in mr.json().get("results", [])
+                        if isinstance(m, dict) and m.get("value") is not None
+                        and 0 <= m["value"] <= 500]
+                if not vals:
+                    continue
+                rows.append({"name": name, "lat": slat, "lon": slon,
+                             "pm25": float(np.median(vals))})
+            except Exception:
+                continue
+
+    if not rows:
+        return pd.DataFrame()
+
+    df = pd.DataFrame(rows)
+    df = df.groupby("name", as_index=False).agg(
+        {"lat": "first", "lon": "first", "pm25": "median"}
+    )
+    return df.sort_values("pm25", ascending=False).reset_index(drop=True)
+
+
 @st.cache_data(ttl=REFRESH_SEC)
 def fetch_meteo(hours_back: int = 48) -> pd.DataFrame | None:
     """Fetch meteorological data from Open-Meteo (no API key required)."""
@@ -490,7 +575,9 @@ def main():
 
     # ── Tabs ──────────────────────────────────────────────────────────────────
     st.markdown("---")
-    tab_forecast, tab_map, tab_history = st.tabs(["📈 Forecast", "🗺️ Map", "📅 7-Day History"])
+    tab_forecast, tab_map, tab_history, tab_cities = st.tabs(
+        ["📈 Forecast", "🗺️ Map", "📅 7-Day History", "🌍 Other Cities"]
+    )
 
     # ── Tab 1: Forecast chart ─────────────────────────────────────────────────
     with tab_forecast:
@@ -608,6 +695,93 @@ def main():
             c4.metric("Hours >75", str((hist7["pm25"] > 75).sum()))
         else:
             st.info("7-day history unavailable. Check OpenAQ API key.")
+
+    # ── Tab 4: Other Cities ───────────────────────────────────────────────────
+    with tab_cities:
+        st.subheader("Pipeline reproducibility — other Central Asian cities")
+        st.info(
+            "The same data pipeline (OpenAQ + Open-Meteo) runs unchanged for any city. "
+            "Only the coordinates in `src/config.py` need updating. "
+            "Forecast models require retraining on local historical data."
+        )
+
+        city_name = st.selectbox(
+            "Select city",
+            [c[0] for c in OTHER_CITIES],
+            index=0,
+        )
+        city_row  = next(c for c in OTHER_CITIES if c[0] == city_name)
+        _, country, clat, clon = city_row
+
+        col_info, col_map2 = st.columns([1, 2])
+
+        with col_info:
+            st.markdown(f"**{city_name}, {country}**")
+            st.markdown(f"Coordinates: {clat:.4f}°N, {clon:.4f}°E")
+            st.markdown(f"Search radius: 25 km")
+
+            with st.spinner(f"Fetching OpenAQ sensors for {city_name}…"):
+                city_df = fetch_city_stations(clat, clon)
+
+            if city_df.empty:
+                st.warning(f"No active PM2.5 sensors found in {city_name}. "
+                           "Coverage may be limited in this area.")
+            else:
+                n_sensors  = len(city_df)
+                median_pm25 = float(city_df["pm25"].median())
+                color = aqi_color(median_pm25)
+                label = aqi_label(median_pm25)
+
+                st.markdown("---")
+                st.metric("Active PM2.5 sensors", n_sensors)
+                st.markdown(
+                    f"<div style='text-align:left;padding:4px 0'>"
+                    f"<span style='font-size:0.9rem;color:#bbb'>Current median PM2.5</span><br>"
+                    f"<span style='font-size:2.4rem;font-weight:bold;color:{color}'>"
+                    f"{median_pm25:.0f} μg/m³</span><br>"
+                    f"<span style='font-size:0.85rem;color:{color}'>{label}</span>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+                st.markdown("---")
+                st.markdown("**vs Almaty baseline**")
+                st.markdown(f"- Almaty: 192 sensors, {current_pm25:.0f} μg/m³ now")
+                st.markdown(f"- {city_name}: {n_sensors} sensors, {median_pm25:.0f} μg/m³ now")
+
+        with col_map2:
+            if not city_df.empty:
+                m2 = folium.Map(location=[clat, clon], zoom_start=11,
+                                tiles="CartoDB dark_matter")
+                if len(city_df) > 2:
+                    HeatMap(
+                        [[r.lat, r.lon, r.pm25] for r in city_df.itertuples()],
+                        radius=20, blur=30, min_opacity=0.3,
+                        gradient={0.0: "#2ECC71", 0.33: "#F1C40F",
+                                  0.66: "#E74C3C", 1.0: "#8E44AD"},
+                    ).add_to(m2)
+                for row in city_df.itertuples():
+                    color = aqi_color(row.pm25)
+                    folium.CircleMarker(
+                        location=[row.lat, row.lon],
+                        radius=6, color=color, fill=True,
+                        fill_color=color, fill_opacity=0.85,
+                        tooltip=f"{row.name}: {row.pm25:.0f} μg/m³",
+                    ).add_to(m2)
+                st_folium(m2, width=None, height=420, returned_objects=[])
+            else:
+                st.markdown(f"*No sensor data available for {city_name}.*")
+
+        # Config snippet
+        st.markdown("---")
+        st.markdown("**To deploy a forecast for this city — change two lines in `src/config.py`:**")
+        st.code(
+            f"# src/config.py\n"
+            f"CITY_NAME = \"{city_name}\"\n"
+            f"LAT, LON  = {clat}, {clon}\n\n"
+            f"# Then retrain:\n"
+            f"uv run python scripts/train_models.py",
+            language="python",
+        )
 
     # ── About expander ────────────────────────────────────────────────────────
     st.markdown("---")
