@@ -2,7 +2,7 @@
 
 ## 4.1. Interpretation against research questions and hypotheses
 
-### 4.1.1. RQ1 — Can a locally trained XGBoost model outperform persistence and CAMS?
+### 4.1.1. RQ1, Can a locally trained XGBoost model outperform persistence and CAMS?
 
 The answer is partially affirmative. At the 6-hour horizon, XGBoost achieves
 RMSE = 23.44 μg/m³ and R² = 0.545, outperforming persistence by 22.2% in RMSE
@@ -29,7 +29,7 @@ in RMSE, and at 12 h the margin reaches 40%. This consistency is of direct
 policy relevance: CAMS is the only freely available alternative forecast for
 Almaty, and the present results demonstrate that a locally trained model built
 on open data provides substantially superior guidance at every operational
-lead time. The practical recommendation is therefore unambiguous — an
+lead time. The practical recommendation is therefore unambiguous, an
 operational forecasting system for Almaty should use XGBoost for the 6-hour
 product and Ridge regression for the 12 and 24-hour products.
 
@@ -45,7 +45,7 @@ error source. With only 9,242 training samples across 27 features, the ratio
 of samples to parameters is moderate, making L2 regularisation more effective
 than tree ensemble variance reduction at long horizons.
 
-### 4.1.2. RQ2 — Which features drive model skill?
+### 4.1.2. RQ2, Which features drive model skill?
 
 Hypothesis H2 posited that BLH-derived features would be among the top-five
 feature importances at the 6-hour horizon. The error analysis in §3.4 provides
@@ -54,7 +54,7 @@ to declining BLH approximately 2–3 hours before the full onset of a PM2.5
 inversion event, while persistence and linear regression respond only after
 the observed PM2.5 has started rising. This advance response is only possible
 if the model has learned an association between BLH collapse and future PM2.5
-increase — an association that is encoded in the BLH and blh\_delta features.
+increase, an association that is encoded in the BLH and blh\_delta features.
 Formal SHAP analysis is an identified limitation of the present work (§4.2);
 the claim about feature importance is therefore based on error pattern analysis
 rather than global attribution.
@@ -63,8 +63,8 @@ The physical interpretation of this finding is worth making explicit. If BLH
 is the dominant predictor of forecast skill, then the model is, in effect,
 learning to forecast PM2.5 from the forecast boundary-layer state: when the
 boundary layer is expected to compress, PM2.5 rises; when it expands, PM2.5
-falls. This is a physically correct relationship — it is the mechanism by which
-Almaty's inversion events develop — and the model's ability to capture it is
+falls. This is a physically correct relationship, it is the mechanism by which
+Almaty's inversion events develop, and the model's ability to capture it is
 the primary source of its advantage over persistence and CAMS. CAMS, as a
 global chemistry-transport model operating at roughly 40 km horizontal
 resolution, represents the city as a single grid cell and cannot resolve the
@@ -76,10 +76,10 @@ directly quantify the contribution of meteorological boundary-layer information
 to forecast skill, separating the role of BLH from that of the autoregressive
 PM2.5 lag features.
 
-### 4.1.3. RQ3 — Residual error distribution and failure regimes
+### 4.1.3. RQ3, Residual error distribution and failure regimes
 
-Hypothesis H3 — that XGBoost under-predicts peak concentrations during
-inversion onset — is confirmed qualitatively by the error analysis in §3.4.
+Hypothesis H3, that XGBoost under-predicts peak concentrations during
+inversion onset, is confirmed qualitatively by the error analysis in §3.4.
 During rapid inversion events (BLH collapsing from > 200 m to < 50 m within
 3–6 hours), the XGBoost model lags the observed PM2.5 ramp by approximately
 2–3 hours, which corresponds to one to two forecast time steps. At a typical
@@ -100,8 +100,8 @@ the elevated values, which requires 1–3 hours from onset. The BLH delta
 feature partially compensates by providing an advance meteorological signal,
 but it cannot fully overcome the temporal delay imposed by the lag structure.
 The failure is therefore architectural rather than a consequence of
-under-fitting. The most direct remedy — integrating forecast rather than
-analysed BLH values — is described in §4.5.
+under-fitting. The most direct remedy, integrating forecast rather than
+analysed BLH values, is described in §4.5.
 
 Rapid clearing events reveal a symmetric failure mode: XGBoost over-predicts
 PM2.5 for 2–4 hours after a synoptic boundary layer breakdown because the
@@ -125,9 +125,9 @@ coating or co-accumulating with hygroscopic PM2.5 particles scatter additional
 light, causing the sensor to report elevated concentrations relative to the
 true dry-mass concentration. Almaty winter relative humidity frequently exceeds
 80% during the same inversion events that produce the highest PM2.5
-concentrations. This co-occurrence is mechanistically coherent — both high
+concentrations. This co-occurrence is mechanistically coherent, both high
 humidity and high PM2.5 are products of the same stable, moist boundary-layer
-state — but it means that the model learns to associate high-humidity
+state, but it means that the model learns to associate high-humidity
 meteorological conditions with elevated sensor readings that partially reflect
 hygroscopic artefact rather than actual PM2.5 mass increase. The consequence
 is that the model's accuracy is hardest to evaluate precisely in the most
@@ -183,9 +183,9 @@ full-coverage period.
 The XGBoost hyperparameters used in this study were set to standard values
 for tabular regression problems of the present size, without a systematic grid
 search or Bayesian optimisation procedure. A properly optimised XGBoost model
-— obtained, for instance, via a Bayesian search over the space
+- obtained, for instance, via a Bayesian search over the space
 n\_estimators ∈ [200, 1000], learning\_rate ∈ [0.01, 0.3], and
-max\_depth ∈ [3, 10] — would likely achieve lower RMSE than reported here.
+max\_depth ∈ [3, 10], would likely achieve lower RMSE than reported here.
 The comparison between Ridge and XGBoost is therefore a comparison between a
 well-regularised linear model and a plausibly-configured but not optimised
 non-linear model. The reported reversal at the 12 and 24-hour horizons may
@@ -208,8 +208,8 @@ needed for stable generalisation \cite{enebish2021ulaanbaatar, menares2021foreca
 realisation of the synoptic-scale variability that drives inversion frequency
 and severity, while two or more years provide the model with a range of winter
 conditions against which to generalise. The present model has been trained on
-1.3 cycles. Year-to-year meteorological variability — particularly the
-frequency and severity of temperature-inversion episodes — may mean that the
+1.3 cycles. Year-to-year meteorological variability, particularly the
+frequency and severity of temperature-inversion episodes, may mean that the
 reported test-set performance overestimates or underestimates the model's
 accuracy in a future winter season with different synoptic patterns. As the
 AirGradient network accumulates additional years of data, periodic retraining
@@ -219,7 +219,7 @@ deployment protocol.
 The summer months are also underrepresented in the training data relative to
 their share of a full annual cycle. The training window of October 2024 –
 April 2026 captures two winters but only one summer (June–September 2025),
-during which PM2.5 monthly means ranged from approximately 12 to 17 μg/m³ —
+during which PM2.5 monthly means ranged from approximately 12 to 17 μg/m³ -
 well below the WHO guideline and largely driven by dust rather than combustion.
 A model trained predominantly on winter data may therefore overweight the
 inversion-onset signals and underweight the dust transport features that
@@ -285,7 +285,7 @@ or a reanalysis product. The Open-Meteo ERA5-derived BLH archive
 \cite{zippenfenig_openmeteo_2023} provides this variable at no cost and without
 registration, which is the enabling condition for including it here. The
 advance response to BLH collapse observed in §4.1.2 suggests that this variable
-carries predictive information not available in surface fields alone — a finding
+carries predictive information not available in surface fields alone, a finding
 that would be worth replicating in future work on other mountain-basin cities
 where the same reanalysis product is accessible.
 
@@ -305,9 +305,9 @@ and absence of authentication make it directly usable by schools, hospitals,
 and municipal public health offices without technical intermediaries.
 
 The first scientific contribution is the first published evaluation of XGBoost
-vs. CAMS for PM2.5 forecasting in Almaty. The quantitative result — that
+vs. CAMS for PM2.5 forecasting in Almaty. The quantitative result, that
 locally trained models outperform CAMS by 16–40% in RMSE across all three
-horizons — establishes the value of local model training over global CTM
+horizons, establishes the value of local model training over global CTM
 application in this specific geographic and meteorological context. This
 finding is directly relevant to the question of whether Kazhydromet or other
 regional agencies should invest in local model development as a complement or
@@ -343,8 +343,8 @@ resolution that is not available from any other open source in this form.
 
 Five extensions are identified as high-priority for future work.
 
-**SHAP-based feature attribution.** A formal SHAP analysis — computing
-Shapley values for each feature across the full test set — would directly
+**SHAP-based feature attribution.** A formal SHAP analysis, computing
+Shapley values for each feature across the full test set, would directly
 answer RQ2 and provide a quantitative, peer-reviewable attribution of model
 skill to BLH, autoregressive lags, and other feature families. The
 `shap.TreeExplainer` class computes exact Shapley values for XGBoost in
@@ -392,9 +392,9 @@ requiring specialised software development.
 **Ensemble of XGBoost and Ridge regression.** Since XGBoost produces the
 lowest RMSE at the 6-hour horizon and Ridge regression produces the lowest
 RMSE at the 12 and 24-hour horizons, a blended ensemble using
-horizon-dependent weights is a natural next step. A simple weighted average —
+horizon-dependent weights is a natural next step. A simple weighted average -
 with weights learned by minimising RMSE on a held-out validation set for each
-horizon separately — would be expected to match or exceed both individual
+horizon separately, would be expected to match or exceed both individual
 models at all three horizons. At the 6-hour horizon the optimal ensemble
 would weight XGBoost heavily; at 24 hours it would weight Ridge heavily; and
 at 12 hours the appropriate blend is an empirical question. This ensemble
@@ -408,8 +408,8 @@ PM2.5 is dominated by coal combustion during winter inversions, but vehicular
 emissions contribute meaningfully to the annual-mean concentration, particularly
 during morning and evening rush hours on days when the boundary layer is
 partially but not fully suppressed (BLH in the range 50–200 m). Hourly vehicle
-counts are not available from open sources for Almaty, but proxy variables —
-such as hour-of-day interaction terms with working-day indicators — could
+counts are not available from open sources for Almaty, but proxy variables -
+such as hour-of-day interaction terms with working-day indicators, could
 partially capture the traffic signal. Adding four to six such interaction
 features to the existing 27-feature matrix would require no change to the model
 architecture and could reduce residuals in the moderate-concentration regime
