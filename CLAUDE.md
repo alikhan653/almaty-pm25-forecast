@@ -28,7 +28,7 @@ revising any chapter, section, or paragraph of the dissertation.
 - Citation style: **APA 7th edition**
 - Formatting standard: **GOST 7.32-2017**
 - Margins: left 30 mm, right 15 mm, top/bottom 20 mm; font TNR 14 pt, 1.5 line spacing
-- Anti-plagiarism: Antiplagiat.ru (includes AI-detection); target ≥ 70% originality
+- Anti-plagiarism: Antiplagiat.ru (includes AI-detection); target ≥ 90% originality
 - Model results (held-out test, winter 2025–26):
   - XGBoost +6 h: RMSE = 23.44 μg/m³, R² = 0.545
   - XGBoost +12 h: RMSE = 28.67 μg/m³, R² = 0.318

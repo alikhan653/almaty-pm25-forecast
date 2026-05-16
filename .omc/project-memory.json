@@ -1,0 +1,431 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1778409596390,
+  "projectRoot": "/Users/alikhan/Kbtu",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "pyproject.toml"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "pytest",
+        "version": null,
+        "category": "testing"
+      }
+    ],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": "pytest",
+    "lintCommand": "ruff check",
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": "snake_case",
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": "feature-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "src",
+      "tests"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "articles": {
+      "path": "articles",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1778409596368,
+      "keyFiles": [
+        "HYBRID_MUSIC_RECOMMENDATION_SYSTEM.docx"
+      ]
+    },
+    "data": {
+      "path": "data",
+      "purpose": "Data files",
+      "fileCount": 1,
+      "lastAccessed": 1778409596369,
+      "keyFiles": [
+        "almaty_aq.db"
+      ]
+    },
+    "notebooks": {
+      "path": "notebooks",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1778409596369,
+      "keyFiles": []
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 3,
+      "lastAccessed": 1778409596370,
+      "keyFiles": [
+        "__init__.py",
+        "config.py",
+        "db.py"
+      ]
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
+      "fileCount": 2,
+      "lastAccessed": 1778409596370,
+      "keyFiles": [
+        "__init__.py",
+        "test_ingest_format.py"
+      ]
+    },
+    "thesis": {
+      "path": "thesis",
+      "purpose": null,
+      "fileCount": 11,
+      "lastAccessed": 1778409596371,
+      "keyFiles": [
+        "chapter_1_review.md",
+        "chapter_2_methodology.md",
+        "introduction.md",
+        "music_paper_brief.md",
+        "predefense_script.md"
+      ]
+    },
+    "src/app": {
+      "path": "src/app",
+      "purpose": "Application code",
+      "fileCount": 1,
+      "lastAccessed": 1778409596371,
+      "keyFiles": [
+        "__init__.py"
+      ]
+    },
+    "src/models": {
+      "path": "src/models",
+      "purpose": "Data models",
+      "fileCount": 1,
+      "lastAccessed": 1778409596371,
+      "keyFiles": [
+        "__init__.py"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "thesis/introduction.md",
+      "accessCount": 14,
+      "lastAccessed": 1778449380132,
+      "type": "file"
+    },
+    {
+      "path": "thesis/chapter_1_review.md",
+      "accessCount": 13,
+      "lastAccessed": 1778437934155,
+      "type": "file"
+    },
+    {
+      "path": "thesis/chapter_3_implementation.md",
+      "accessCount": 13,
+      "lastAccessed": 1778437996445,
+      "type": "file"
+    },
+    {
+      "path": "thesis/main.tex",
+      "accessCount": 13,
+      "lastAccessed": 1778456780785,
+      "type": "file"
+    },
+    {
+      "path": "thesis/predefense_script.md",
+      "accessCount": 12,
+      "lastAccessed": 1776673857245,
+      "type": "file"
+    },
+    {
+      "path": "app.py",
+      "accessCount": 11,
+      "lastAccessed": 1778967814371,
+      "type": "file"
+    },
+    {
+      "path": "thesis/references.bib",
+      "accessCount": 8,
+      "lastAccessed": 1778968812882,
+      "type": "file"
+    },
+    {
+      "path": "requirements/formatting.md",
+      "accessCount": 7,
+      "lastAccessed": 1778436154477,
+      "type": "file"
+    },
+    {
+      "path": "thesis/chapter_4_discussion.md",
+      "accessCount": 7,
+      "lastAccessed": 1778437740937,
+      "type": "file"
+    },
+    {
+      "path": "requirements/writing_style.md",
+      "accessCount": 7,
+      "lastAccessed": 1778459462551,
+      "type": "file"
+    },
+    {
+      "path": "requirements/README.md",
+      "accessCount": 6,
+      "lastAccessed": 1778437415351,
+      "type": "file"
+    },
+    {
+      "path": "thesis/chapter_2_methodology.md",
+      "accessCount": 6,
+      "lastAccessed": 1778437670604,
+      "type": "file"
+    },
+    {
+      "path": "thesis/predefense_slides.md",
+      "accessCount": 5,
+      "lastAccessed": 1776671736605,
+      "type": "file"
+    },
+    {
+      "path": "requirements/kbtu_structure.md",
+      "accessCount": 5,
+      "lastAccessed": 1778441078340,
+      "type": "file"
+    },
+    {
+      "path": "requirements/citations.md",
+      "accessCount": 4,
+      "lastAccessed": 1778968812950,
+      "type": "file"
+    },
+    {
+      "path": "thesis/predefense_script_en.md",
+      "accessCount": 3,
+      "lastAccessed": 1776677182439,
+      "type": "file"
+    },
+    {
+      "path": "thesis/conclusion.md",
+      "accessCount": 3,
+      "lastAccessed": 1778437967592,
+      "type": "file"
+    },
+    {
+      "path": "plan.md",
+      "accessCount": 3,
+      "lastAccessed": 1778460427986,
+      "type": "file"
+    },
+    {
+      "path": "thesis/predefense_script_ru.md",
+      "accessCount": 2,
+      "lastAccessed": 1776671775153,
+      "type": "file"
+    },
+    {
+      "path": "requirements/checklist.md",
+      "accessCount": 2,
+      "lastAccessed": 1778436192567,
+      "type": "file"
+    },
+    {
+      "path": "src/features/temporal.py",
+      "accessCount": 2,
+      "lastAccessed": 1778436400134,
+      "type": "file"
+    },
+    {
+      "path": "src/models/xgboost_model.py",
+      "accessCount": 2,
+      "lastAccessed": 1778436400505,
+      "type": "file"
+    },
+    {
+      "path": "pyproject.toml",
+      "accessCount": 2,
+      "lastAccessed": 1778441471877,
+      "type": "file"
+    },
+    {
+      "path": ".streamlit/config.toml",
+      "accessCount": 2,
+      "lastAccessed": 1778451171762,
+      "type": "file"
+    },
+    {
+      "path": "requirements.txt",
+      "accessCount": 2,
+      "lastAccessed": 1778452459949,
+      "type": "file"
+    },
+    {
+      "path": "src/ingest/openaq.py",
+      "accessCount": 2,
+      "lastAccessed": 1778453055798,
+      "type": "file"
+    },
+    {
+      "path": "src/config.py",
+      "accessCount": 2,
+      "lastAccessed": 1778453075574,
+      "type": "file"
+    },
+    {
+      "path": ".venv/lib/python3.11/site-packages/openaq/shared/models.py",
+      "accessCount": 2,
+      "lastAccessed": 1778453248363,
+      "type": "file"
+    },
+    {
+      "path": "thesis/music_paper_brief.md",
+      "accessCount": 1,
+      "lastAccessed": 1776669653365,
+      "type": "file"
+    },
+    {
+      "path": "src/db.py",
+      "accessCount": 1,
+      "lastAccessed": 1778425279757,
+      "type": "file"
+    },
+    {
+      "path": "src/ingest/meteo.py",
+      "accessCount": 1,
+      "lastAccessed": 1778425285420,
+      "type": "file"
+    },
+    {
+      "path": "src/features/__init__.py",
+      "accessCount": 1,
+      "lastAccessed": 1778425306282,
+      "type": "file"
+    },
+    {
+      "path": "src/features/meteorological.py",
+      "accessCount": 1,
+      "lastAccessed": 1778425457780,
+      "type": "file"
+    },
+    {
+      "path": "src/features/pipeline.py",
+      "accessCount": 1,
+      "lastAccessed": 1778425470083,
+      "type": "file"
+    },
+    {
+      "path": "src/models/baselines.py",
+      "accessCount": 1,
+      "lastAccessed": 1778425472444,
+      "type": "file"
+    },
+    {
+      "path": "src/models/evaluate.py",
+      "accessCount": 1,
+      "lastAccessed": 1778425496830,
+      "type": "file"
+    },
+    {
+      "path": "Pre_defense_of_the_master's_thesis_Azamat_Makulbay,_копия.pdf",
+      "accessCount": 1,
+      "lastAccessed": 1778431180048,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "accessCount": 1,
+      "lastAccessed": 1778431337885,
+      "type": "file"
+    },
+    {
+      "path": "thesis/abstract.md",
+      "accessCount": 1,
+      "lastAccessed": 1778441188914,
+      "type": "file"
+    },
+    {
+      "path": "scripts/make_reference_docx.py",
+      "accessCount": 1,
+      "lastAccessed": 1778441490981,
+      "type": "file"
+    },
+    {
+      "path": ".claude/skills/ml-paper-writing/SKILL.md",
+      "accessCount": 1,
+      "lastAccessed": 1778442544509,
+      "type": "file"
+    },
+    {
+      "path": ".claude/skills/kbtu-latex/SKILL.md",
+      "accessCount": 1,
+      "lastAccessed": 1778442578006,
+      "type": "file"
+    },
+    {
+      "path": ".claude/skills/kbtu-latex/templates/kbtu_thesis.tex",
+      "accessCount": 1,
+      "lastAccessed": 1778442606391,
+      "type": "file"
+    },
+    {
+      "path": "analysis-output/generate_figures.py",
+      "accessCount": 1,
+      "lastAccessed": 1778443516842,
+      "type": "file"
+    },
+    {
+      "path": "analysis-output/analysis-report.md",
+      "accessCount": 1,
+      "lastAccessed": 1778443679045,
+      "type": "file"
+    },
+    {
+      "path": "analysis-output/stats-appendix.md",
+      "accessCount": 1,
+      "lastAccessed": 1778443710905,
+      "type": "file"
+    },
+    {
+      "path": "analysis-output/figure-catalog.md",
+      "accessCount": 1,
+      "lastAccessed": 1778443749179,
+      "type": "file"
+    },
+    {
+      "path": "scripts/train_models.py",
+      "accessCount": 1,
+      "lastAccessed": 1778451054552,
+      "type": "file"
+    },
+    {
+      "path": ".streamlit/secrets.toml.example",
+      "accessCount": 1,
+      "lastAccessed": 1778451110372,
+      "type": "file"
+    },
+    {
+      "path": ".venv/lib/python3.11/site-packages/openaq/_sync/models/measurements.py",
+      "accessCount": 1,
+      "lastAccessed": 1778453238994,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

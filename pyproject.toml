@@ -1,0 +1,24 @@
+[project]
+name = "almaty-aq"
+version = "0.1.0"
+description = "Short-term PM2.5 forecasting for Almaty using open low-cost sensor data"
+requires-python = ">=3.11"
+dependencies = [
+    "folium>=0.20.0",
+    "matplotlib>=3.10.9",
+    "numpy>=2.4.4",
+    "openaq>=0.7.0",
+    "pandas>=3.0.2",
+    "plotly>=6.7.0",
+    "python-dotenv>=1.2.2",
+    "requests>=2.33.1",
+    "scikit-learn>=1.8.0",
+    "streamlit>=1.56.0",
+    "xgboost>=3.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "python-docx>=1.1.0",
+]

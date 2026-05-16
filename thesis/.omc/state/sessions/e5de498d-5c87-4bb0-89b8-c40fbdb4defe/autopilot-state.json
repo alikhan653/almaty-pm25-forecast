@@ -1,0 +1,12 @@
+{
+  "active": false,
+  "started_at": "2026-05-10T23:58:54.704Z",
+  "original_prompt": "/oh-my-claudecode:autopilot use writing-anti-ai in all my chapters",
+  "session_id": "e5de498d-5c87-4bb0-89b8-c40fbdb4defe",
+  "project_path": "/Users/alikhan/Kbtu/thesis",
+  "reinforcement_count": 8,
+  "awaiting_confirmation": false,
+  "last_checked_at": "2026-05-11T00:07:54.532Z",
+  "phase": "complete",
+  "current_phase": "complete"
+}

@@ -1,0 +1,260 @@
+# Introduction
+
+## Motivation and relevance
+
+Almaty's winter air pollution is one of the most severe urban public-health
+problems in Central Asia, and its physical origins are well understood. The
+city sits in a natural mountain basin at an elevation of 700–900 m above sea
+level, enclosed to the south by the Zailiyskiy Alatau range and open to the
+steppe to the north. Under anticyclonic winter conditions, a stable temperature
+inversion forms over the basin, suppressing vertical mixing and trapping
+combustion products near the surface. During the most intense episodes the
+atmospheric boundary-layer height (BLH) collapses from a summer-season mean of
+around 1,000 m to values of 10–50 m, reducing the effective volume available
+for dilution by a factor of 20 to 100. The primary emission source during these
+episodes is private-sector coal combustion: the great majority of residential
+heating in peri-urban Almaty relies on solid-fuel boilers, which emit PM2.5 and
+black carbon at rates that are highly sensitive to combustion temperature and
+coal quality. The combined effect of near-zero ventilation and high emission
+rates produces daily-mean PM2.5 concentrations that routinely exceed
+100 μg/m³ at peak winter, placing the city among the most polluted in the IQAir
+annual rankings for multiple consecutive years \cite{iqair_world_2024}.
+The WHO 24-hour PM2.5 guideline is 15 μg/m³ \cite{who_aqg_2021}; Almaty
+regularly exceeds this threshold by a factor of six or more during inversion
+events, and monthly means of 80.7 μg/m³ (December 2025) and 74.2 μg/m³
+(January 2026) were recorded in the sensor network used in this study.
+
+Until approximately 2023, the public data infrastructure for monitoring this
+problem was severely constrained. Almaty's official Kazhydromet network
+operated fewer than 10 reference-grade monitoring stations within a 682 km²
+urban area — a density that is inadequate for capturing the fine-scale spatial
+gradients characteristic of basin-trapped pollution. The emergence of
+community-scale low-cost sensor (LCS) networks has changed this situation
+substantially. The AirGradient open-hardware platform, combined with the
+OpenAQ data aggregation API \cite{openaq_platform}, has enabled a rapid
+proliferation of low-cost monitors across Almaty. As of April 2026, the network
+used in the present study comprised 192 sensors within a 25 km radius of the
+city centre (43.24°N, 76.89°E), of which 153 were AirGradient units
+concentrated in central and southern residential districts. This density — one
+sensor per roughly 3.5 km² on average, with higher density in the most
+densely populated zones — provides a city-scale spatial picture that was
+impossible to obtain from the reference network alone. Other Central Asian
+cities facing analogous inversion-driven pollution problems, including
+Shymkent (Kazakhstan), Karaganda (Kazakhstan), Bishkek (Kyrgyzstan), and
+Tashkent (Uzbekistan), share the same broad data-availability profile: sparse
+official monitoring, a growing LCS presence on OpenAQ, and essentially no
+published machine-learning forecasting work tailored to their specific
+geography.
+
+Short-term PM2.5 forecasting has matured considerably in the European and
+North American contexts where reference-grade training targets and dense
+meteorological networks are available. Gradient-boosted tree models and
+long short-term memory networks trained on ground-based or satellite-derived
+features routinely achieve useful skill at 6–24 h horizons. Almaty sits
+outside this literature for two distinct reasons. The first is data access:
+the global platforms that publish PM2.5 forecasts — IQAir, AirVisual,
+BreezoMeter — operate proprietary pipelines whose model architectures,
+training data, and evaluation protocols are not in the public domain. The
+second is institutional capacity: Kazhydromet publishes hourly observations
+at its monitoring stations but does not provide a public forecast API or
+machine-readable hazard thresholds. The scientific literature contains no
+peer-reviewed study that trains a gradient-boosted model on Almaty's LCS
+network and evaluates it against a calibrated freely available baseline on a
+held-out winter test period. This gap is the direct motivation for the present
+work.
+
+The significance of this work extends beyond the specific case of Almaty.
+Central Asia as a region carries one of the highest per-capita PM2.5 disease
+burdens globally, driven by a combination of arid dust sources, coal-heavy
+energy systems, and rapidly growing cities. A reproducible pipeline that
+depends only on an OpenAQ API key, a free Open-Meteo weather archive endpoint
+\cite{zippenfenig_openmeteo_2023}, and standard Python libraries deployable on
+free-tier cloud infrastructure represents a transferable template for any
+LCS-served city in the region. The parametric design of the pipeline —
+specifically, the fact that city centre coordinates, API query windows, and
+training configuration can be changed in a single configuration file — means
+that researchers or municipal agencies in Bishkek, Shymkent, or Tashkent
+could adapt the system to their local network within hours rather than months,
+without requiring proprietary data or institutional data-sharing agreements.
+
+## Problem statement
+
+The present research addresses the following gap: there is no open,
+reproducible short-term PM2.5 forecasting system built on the LCS network that
+exists in Almaty, and no published evaluation of how a locally trained model
+compares to the freely available CAMS global forecast for this specific
+geography. The scientific gap is the absence of empirical evidence quantifying
+how much predictive skill is gained by training a machine-learning model on
+Almaty's own sensor data relative to applying an off-the-shelf global
+chemistry-transport model.
+
+Two subsidiary questions are embedded in this gap. First, given the limited
+size of the available LCS dataset (approximately 9,242 training hours across
+562 days), it is unclear whether a non-linear gradient-boosted model or a
+regularised linear model provides superior accuracy — the answer has direct
+implications for model selection in analogous data-scarce urban environments
+elsewhere in Central Asia. Second, the spatial and temporal representativeness
+of a city-median derived from an unevenly distributed LCS network has not been
+quantified for Almaty: during sensor outage periods, the median may reflect
+fewer than 30 active stations rather than the nominal 192, and the consequences
+for forecast validity are unknown. Addressing these questions requires a
+complete evaluation pipeline operating on real, openly accessible data from
+Almaty's actual sensor network rather than on synthetic or reference-grade
+surrogate data. The present study provides that pipeline and reports the first
+quantitative answers to both questions on a 562-day window ending April 2026.
+
+## Scope of the intelligent system
+
+The present thesis realises the general programme described in its title —
+*development of an intelligent system for investigating and solving ecological
+problems* — through a focused, high-impact instantiation: wintertime PM2.5
+forecasting in Almaty, Kazakhstan. The choice of PM2.5 in an inversion-dominated
+mountain basin is not arbitrary. It represents the most acute ecological health
+hazard in the region, the most severe data gap relative to the harm it causes,
+and the most tractable starting point for an open, transferable intelligent
+system. The architecture developed here — automated multi-source ingestion,
+BLH-aware feature engineering, multi-horizon supervised models, and a
+zero-authentication public forecast interface — is explicitly designed to
+generalise across ecological monitoring tasks. The same pipeline can ingest
+NO₂ or O₃ rather than PM2.5; the same coordinate-configurable query layer
+can serve Bishkek or Tashkent rather than Almaty. The thesis thus delivers
+both a working system for a specific ecological problem and a reusable template
+for the broader class of problems named in its title.
+
+## Aim and objectives
+
+**Aim.** Develop and evaluate an intelligent short-term PM2.5 forecasting
+system for Almaty that is built entirely on open data and code and is
+deployable on free-tier infrastructure.
+
+**Objectives.**
+1. Ingest and curate PM2.5 observations (OpenAQ LCS) and meteorological
+   features (Open-Meteo, including boundary-layer height) for the
+   2024-10-01 → 2026-04-15 window into a reproducible SQLite store.
+2. Engineer temporal and meteorological features tailored to Almaty's winter
+   inversion regime.
+3. Train and cross-validate an XGBoost forecaster for 6/12/24 h horizons and
+   compare it against three baselines: persistence, linear regression, and
+   CAMS.
+4. Analyse error regimes — in particular, episodes of sudden onset and rapid
+   clearing — and articulate the model's failure modes.
+5. Ship a single-screen Streamlit web application that visualises current
+   observations and the XGBoost forecast on a map of Almaty.
+
+## Scientific novelty
+
+The first contribution of the present study is the development of the first
+publicly released PM2.5 forecasting model calibrated specifically for Almaty's
+LCS network and inversion-dominated winter meteorology. Prior work on Almaty
+air quality is predominantly descriptive (source apportionment, trend
+analysis), or relies on satellite-derived estimates rather than ground-level
+sensor data. The present model is trained and evaluated on the 192-station
+OpenAQ network over a 562-day window ending April 2026, using a feature set
+that explicitly encodes BLH dynamics and inversion-onset signals not present
+in earlier local work.
+
+The second contribution is the reproducible open architecture. All inputs are
+openly licensed (CC BY 4.0, no paywalled data); the full pipeline is a single
+Python repository with no cloud dependencies. Comparable published systems —
+including those evaluated by \cite{enebish2021ulaanbaatar, menares2021forecasting, Ayus2023Comparison} — typically rely on proprietary ground truth, restricted API access,
+or institutional data agreements that prevent reproduction or geographic
+transfer. The present design explicitly eliminates these barriers, making the
+pipeline portable to Shymkent, Karaganda, and other Central Asian cities with
+analogous LCS-on-OpenAQ data profiles.
+
+The third contribution is a methodologically significant result regarding
+model-complexity trade-offs. Ridge regression outperforms XGBoost at the 12
+and 24-hour forecast horizons — by 9.8% in RMSE at +12 h (Ridge: 25.85 vs.
+XGBoost: 28.67 μg/m³) and by 13.5% at +24 h (Ridge: 27.24 vs. XGBoost:
+31.48 μg/m³). This result is observed on a training set of 9,242 hours with
+27 features — a scale at which, on the basis of published benchmarks,
+non-linear ensemble methods would normally be expected to retain their
+advantage. The finding contributes to the evidence base on model-complexity
+trade-offs for air quality forecasting problems with under 10,000 training
+samples. The most closely related published comparisons \cite{enebish2021ulaanbaatar, menares2021forecasting} report similar model-size
+reversals in settings where the target variable carries substantial
+measurement noise, which is consistent with the known hygroscopic
+overestimation bias in uncalibrated LCS readings.
+
+This reversal also has an immediate practical consequence for system design.
+Because Ridge regression requires no tree construction, its inference time
+on a single row of features is negligible compared to XGBoost, and its
+serialised model file is several orders of magnitude smaller. In the context
+of a free-tier Streamlit deployment where memory and compute are constrained,
+a Ridge model at the 12 and 24-hour horizons is not merely equally accurate
+but computationally preferable. This alignment of statistical and engineering
+considerations strengthens the case for a multi-model operational system over
+a single-model one.
+
+## Object, subject, and methods
+
+- **Object of study:** short-term PM2.5 concentration dynamics in Almaty.
+- **Subject of study:** machine-learning models for hourly PM2.5 forecasting
+  on LCS-based observations in inversion-dominated mountain-basin conditions.
+- **Methods:** data engineering on openly available APIs; supervised
+  learning with gradient-boosted trees; time-series cross-validation;
+  baseline comparison; error-regime analysis.
+
+## Practical significance
+
+The locally trained XGBoost model achieves RMSE = 23.44 μg/m³ and R² = 0.545
+at the 6-hour forecast horizon on a held-out winter test set of 2,311 hours
+(December 2025 – April 2026), outperforming the CAMS global chemistry-transport
+model by 41.1% in RMSE at the same horizon. At the 12-hour horizon, Ridge
+regression produces RMSE = 25.85 μg/m³ and R² = 0.446, outperforming CAMS
+by approximately 28% in RMSE. At 24 hours, Ridge achieves RMSE = 27.24 μg/m³
+and R² = 0.383, while CAMS produces negative R² values at all three horizons
+(−0.314, −0.376, and −0.184 at 6, 12, and 24 h respectively), indicating
+that the global model provides no useful predictive signal for this geography.
+All locally trained models outperform CAMS by at least 16% in RMSE across
+every horizon tested.
+
+The practical deployment of these results takes the form of a Streamlit web
+application that provides a continuously updated PM2.5 forecast for Almaty at
+no cost to the end user. The application refreshes on a 30–60 second cycle,
+requires no authentication, and can be accessed from any device with a
+browser, making it suitable for use by schools, hospitals, municipal public
+health offices, and community organisations that lack technical staff or
+data infrastructure. The forecast uncertainty is communicated as a confidence
+band of approximately ±17 μg/m³ at the 6-hour horizon (±1 MAE), which
+provides a directly operationally useful range: an advisory issued when the
+lower bound of the forecast band crosses the WHO 24-hour guideline of
+15 μg/m³ will capture genuine deterioration events at a false-positive rate
+acceptable for public communication purposes. The map view displays the
+current city-median PM2.5 alongside the three horizon forecasts, and the
+colour scale is calibrated to the Kazakhstani national AQI categories so that
+non-specialist users can interpret the displayed values without reference to
+μg/m³ numerics. The complete pipeline — data ingest, feature engineering,
+model training, and application — is implemented in a single open Python
+repository with no cloud dependencies, making it directly portable to other
+Central Asian cities.
+
+> Deployment URL: [to be added after Week 3 deployment]
+
+## Structure of the thesis
+
+Chapter 1 reviews the scientific and policy context in three parts: the
+meteorological and emission drivers of Almaty's PM2.5 episodes, including the
+role of temperature inversions and coal combustion; the landscape of low-cost
+sensor technology and the OpenAQ data ecosystem that makes the present dataset
+possible; and the methodological literature on gradient-boosted tree models and
+alternative approaches for short-term urban PM2.5 forecasting, with emphasis
+on studies conducted in inversion-dominated mountain or basin environments.
+Chapter 2 describes the data sources and system architecture in full
+reproducible detail: the SQLite database schema, the OpenAQ and Open-Meteo
+API ingestion procedures, the 27-feature matrix construction (including BLH
+delta, temporal lag, and calendar features), the train/test split, and the
+rationale for each non-obvious design choice. Chapter 3 reports the
+experimental results: the quantitative model comparison across all three
+forecast horizons and all four models, the feature importance analysis, the
+error-regime case studies on inversion onset and clearing events, and the
+spatial analysis of sensor-coverage effects during the October–November 2025
+AirGradient firmware outage period. Chapter 4 discusses the implications of
+the results against the stated research questions, situates the findings
+within the published literature, quantifies the principal limitations, and
+proposes five specific directions for future work, including SHAP-based
+feature attribution, forecast BLH integration, and an ensemble of XGBoost and
+Ridge regression. An appendix provides the full model hyperparameter
+configurations, the API query specifications, and the data-quality filter
+thresholds applied during ingestion, so that the complete pipeline can be
+reproduced from the archived code and database without ambiguity.

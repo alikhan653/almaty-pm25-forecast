@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"which xelatex && xelatex --version | head -2\",\"description\":\"Check if xelatex is available\"}",
+  "error": "Exit code 1\nxelatex not found",
+  "timestamp": "2026-05-10T23:21:32.502Z",
+  "retry_count": 1
+}

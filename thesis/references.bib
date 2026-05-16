@@ -1,0 +1,537 @@
+% Only entries verified against authoritative sources via web search.
+% Last updated: 2026-05-11
+% Do NOT add entries from memory — verify every citation before adding.
+
+% ── Core data platforms ───────────────────────────────────────────────────
+
+@misc{openaq_platform,
+  author       = {{OpenAQ}},
+  title        = {{OpenAQ Platform}},
+  year         = {2024},
+  howpublished = {\url{https://openaq.org}},
+  note         = {Data accessed via \url{https://api.openaq.org/v3}; licence CC BY 4.0}
+}
+
+@misc{zippenfenig_openmeteo_2023,
+  author       = {Zippenfenig, Patrick},
+  title        = {{Open-Meteo.com Weather API}},
+  year         = {2023},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.7970649},
+  howpublished = {\url{https://open-meteo.com}}
+}
+
+% ── WHO / WMO guidelines ──────────────────────────────────────────────────
+
+@misc{who_aqg_2021,
+  author       = {{World Health Organization}},
+  title        = {{WHO global air quality guidelines: particulate matter
+                   (PM\textsubscript{2.5} and PM\textsubscript{10}), ozone,
+                   nitrogen dioxide, sulfur dioxide and carbon monoxide}},
+  year         = {2021},
+  address      = {Geneva},
+  howpublished = {\url{https://www.who.int/publications/i/item/9789240034228}}
+}
+
+@techreport{WHO2013revihaap,
+  author      = {{World Health Organization Regional Office for Europe}},
+  title       = {Review of evidence on health aspects of air pollution ---
+                 {REVIHAAP} Project: Technical Report},
+  institution = {World Health Organization Regional Office for Europe},
+  year        = {2013},
+  address     = {Copenhagen, Denmark},
+  url         = {https://www.who.int/europe/publications/i/item/WHO-EURO-2013-4101-43860-61757}
+}
+
+@techreport{WMO2016GAW227,
+  author      = {{World Meteorological Organization}},
+  title       = {{WMO/GAW} Aerosol Measurement Procedures, Guidelines and
+                 Recommendations, 2nd edition},
+  institution = {World Meteorological Organization},
+  year        = {2016},
+  number      = {GAW Report No.\ 227, WMO-No.\ 1177},
+  address     = {Geneva, Switzerland},
+  url         = {https://library.wmo.int/records/item/55277-wmo-gaw-aerosol-measurement-procedures-guidelines-and-recommendations}
+}
+
+% ── IQAir report ──────────────────────────────────────────────────────────
+
+@techreport{iqair_world_2024,
+  author      = {{IQAir}},
+  title       = {2024 World Air Quality Report},
+  institution = {IQAir AG},
+  year        = {2025},
+  address     = {Goldach, Switzerland},
+  url         = {https://www.iqair.com/world-air-quality-report},
+  note        = {Released March 2025; covers 2024 PM2.5 data from
+                 40{,}000+ stations across 138 countries}
+}
+
+% ── CAMS global forecast system ───────────────────────────────────────────
+
+@article{inness2019cams,
+  author    = {Inness, Antje and Ades, Melanie and Agust{\'i}-Panareda, Anna
+               and Barr{\'e}, J{\'e}r{\^o}me and Benedictow, Anna
+               and Blechschmidt, Anne-Marlene and Dominguez, Juan Jos{\'e}
+               and Engelen, Richard and Eskes, Henk and Flemming, Johannes
+               and Huijnen, Vincent and Jones, Luke and Kipling, Zak
+               and Massart, S{\'e}bastien and Parrington, Mark
+               and Peuch, Vincent-Henri and Razinger, Miha and Remy, Samuel
+               and Schulz, Michael and Suttie, Martin},
+  title     = {The {CAMS} reanalysis of atmospheric composition},
+  journal   = {Atmospheric Chemistry and Physics},
+  year      = {2019},
+  volume    = {19},
+  number    = {6},
+  pages     = {3515--3556},
+  doi       = {10.5194/acp-19-3515-2019}
+}
+
+% ── Machine learning methods ─────────────────────────────────────────────
+
+@inproceedings{chen2016xgboost,
+  author    = {Chen, Tianqi and Guestrin, Carlos},
+  title     = {{XGBoost}: A Scalable Tree Boosting System},
+  booktitle = {Proceedings of the 22nd {ACM SIGKDD} International Conference
+               on Knowledge Discovery and Data Mining},
+  series    = {KDD '16},
+  year      = {2016},
+  pages     = {785--794},
+  publisher = {ACM},
+  address   = {San Francisco, CA, USA},
+  doi       = {10.1145/2939672.2939785}
+}
+
+@inproceedings{ke2017lightgbm,
+  author    = {Ke, Guolin and Meng, Qi and Finley, Thomas and Wang, Taifeng
+               and Chen, Wei and Ma, Weidong and Ye, Qiwei and Liu, Tie-Yan},
+  title     = {{LightGBM}: A Highly Efficient Gradient Boosting Decision Tree},
+  booktitle = {Advances in Neural Information Processing Systems 30
+               ({NeurIPS} 2017)},
+  year      = {2017},
+  pages     = {3146--3154},
+  publisher = {Curran Associates, Inc.},
+  url       = {https://proceedings.neurips.cc/paper/2017/hash/6449f44a102fde848669bdd9eb6b76fa-Abstract.html}
+}
+
+@inproceedings{lundberg2017shap,
+  author    = {Lundberg, Scott M. and Lee, Su-In},
+  title     = {A Unified Approach to Interpreting Model Predictions},
+  booktitle = {Advances in Neural Information Processing Systems 30
+               ({NeurIPS} 2017)},
+  year      = {2017},
+  pages     = {4765--4774},
+  publisher = {Curran Associates, Inc.},
+  url       = {https://proceedings.neurips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html}
+}
+
+% ── PM2.5 forecasting with deep learning ─────────────────────────────────
+
+@article{qi2019pm25lstm,
+  author    = {Qi, Yanlin and Li, Qing and Karimian, Hamed and Liu, Diyuan},
+  title     = {A hybrid model for spatiotemporal forecasting of {PM2.5}
+               based on graph convolutional neural network and long
+               short-term memory},
+  journal   = {Science of the Total Environment},
+  year      = {2019},
+  volume    = {664},
+  pages     = {1--10},
+  doi       = {10.1016/j.scitotenv.2019.01.333}
+}
+
+% ── Low-cost sensor literature ───────────────────────────────────────────
+
+@article{morawska2018lowcost,
+  author    = {Morawska, Lidia and Thai, Phong K. and Liu, Xiaoting
+               and Asumadu-Sakyi, Akwasi and Ayoko, Godwin
+               and Bartonova, Alena and Bedini, Andrea and Chai, Fahe
+               and Christensen, Bruce and Dunbabin, Matthew and Gao, Jian
+               and Hagler, Gayle S. W. and Jayaratne, Rohan
+               and Kumar, Prashant and Lau, Alexis K. H.
+               and Louie, Peter K. K. and Mazaheri, Mandana and Ning, Zhi
+               and Motta, Nunzio and Williams, Ronald},
+  title     = {Applications of low-cost sensing technologies for air quality
+               monitoring and exposure assessment: How far have they gone?},
+  journal   = {Environment International},
+  year      = {2018},
+  volume    = {116},
+  pages     = {286--299},
+  doi       = {10.1016/j.envint.2018.04.018}
+}
+
+@article{snyder2013paradigm,
+  author    = {Snyder, Emily G. and Watkins, Timothy H. and Solomon, Paul A.
+               and Thoma, Eben D. and Williams, Ronald W.
+               and Hagler, Gayle S. W. and Shelow, David
+               and Hindin, David A. and Kilaru, Vasu J. and Preuss, Peter W.},
+  title     = {The Changing Paradigm of Air Pollution Monitoring},
+  journal   = {Environmental Science \& Technology},
+  year      = {2013},
+  volume    = {47},
+  number    = {20},
+  pages     = {11369--11377},
+  doi       = {10.1021/es4022602}
+}
+
+@article{DiAntonio2018humidity,
+  author    = {Di Antonio, Andrea and Popoola, Olalekan A. M. and Ouyang,
+               Bin and Saffell, John and Jones, Roderic L.},
+  title     = {Developing a Relative Humidity Correction for Low-Cost Sensors
+               Measuring Ambient Particulate Matter},
+  journal   = {Sensors},
+  year      = {2018},
+  volume    = {18},
+  number    = {9},
+  pages     = {2790},
+  doi       = {10.3390/s18092790}
+}
+
+@article{Popoola2016electrochemical,
+  author    = {Popoola, Olalekan A. M. and Stewart, Gordon B. and Mead,
+               M. I. and Jones, Roderic L.},
+  title     = {Development of a baseline-temperature correction methodology
+               for electrochemical sensors and its implications for long-term
+               stability},
+  journal   = {Atmospheric Environment},
+  year      = {2016},
+  volume    = {147},
+  pages     = {330--343},
+  doi       = {10.1016/j.atmosenv.2016.10.024}
+}
+
+% ── Mountain-basin inversion studies (Salt Lake Valley) ──────────────────
+
+@article{Silcox2012winterPM25,
+  author    = {Silcox, Geoffrey D. and Kelly, Kerry E. and Crosman,
+               Erik T. and Whiteman, C. David and Allen, Bruce L.},
+  title     = {Wintertime {PM2.5} concentrations during persistent, multi-day
+               cold-air pools in a mountain valley},
+  journal   = {Atmospheric Environment},
+  year      = {2012},
+  volume    = {46},
+  pages     = {17--24},
+  doi       = {10.1016/j.atmosenv.2011.10.041}
+}
+
+@article{Whiteman2014SLV,
+  author    = {Whiteman, C. David and Hoch, Sebastian W. and Horel,
+               John D. and Charland, Aime},
+  title     = {Relationship between particulate air pollution and meteorological
+               variables in {Utah's Salt Lake Valley}},
+  journal   = {Atmospheric Environment},
+  year      = {2014},
+  volume    = {94},
+  pages     = {742--753},
+  doi       = {10.1016/j.atmosenv.2014.05.066}
+}
+
+% ── Transformer / deep learning survey ───────────────────────────────────
+
+@inproceedings{vaswani2017attention,
+  author    = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and
+               Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and
+               Kaiser, {\L}ukasz and Polosukhin, Illia},
+  title     = {Attention Is All You Need},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {30},
+  pages     = {5998--6008},
+  year      = {2017},
+  publisher = {Curran Associates, Inc.},
+  url       = {https://papers.neurips.cc/paper/7181-attention-is-all-you-need}
+}
+
+@article{lim2021survey,
+  author    = {Lim, Bryan and Zohren, Stefan},
+  title     = {Time-series forecasting with deep learning: a survey},
+  journal   = {Philosophical Transactions of the Royal Society A:
+               Mathematical, Physical and Engineering Sciences},
+  volume    = {379},
+  number    = {2194},
+  pages     = {20200209},
+  year      = {2021},
+  doi       = {10.1098/rsta.2020.0209}
+}
+
+% ── ERA5 boundary-layer height evaluation ────────────────────────────────
+
+@article{guo2021blh,
+  author    = {Guo, Jianping and Zhang, Jing and Yang, Kun and Liao, Hong
+               and Zhang, Shaodong and Huang, Kangning and Lv, Yanmin
+               and Shao, Jian and Yu, Tao and Tong, Bing and Li, Jian
+               and Su, Tingting and Yim, Steve H. L. and Stoffelen, Ad
+               and Zhai, Panmao and Xu, Xiaofeng},
+  title     = {Investigation of near-global daytime boundary layer height
+               using high-resolution radiosondes: first results and comparison
+               with {ERA5}, {MERRA-2}, {JRA-55}, and {NCEP-2} reanalyses},
+  journal   = {Atmospheric Chemistry and Physics},
+  volume    = {21},
+  number    = {22},
+  pages     = {17079--17097},
+  year      = {2021},
+  doi       = {10.5194/acp-21-17079-2021}
+}
+
+% ── City comparators ──────────────────────────────────────────────────────
+
+@article{enebish2021ulaanbaatar,
+  author    = {Enebish, Temuulen and Chau, Khang and Jadamba, Batbayar and
+               Franklin, Meredith},
+  title     = {Predicting ambient {PM2.5} concentrations in {Ulaanbaatar},
+               {Mongolia} with machine learning approaches},
+  journal   = {Journal of Exposure Science \& Environmental Epidemiology},
+  volume    = {31},
+  number    = {4},
+  pages     = {699--708},
+  year      = {2021},
+  doi       = {10.1038/s41370-020-0257-8}
+}
+
+@article{menares2021forecasting,
+  author    = {Menares, Camilo and Perez, Patricio and Parraguez, Santiago
+               and Fleming, Zo{\"e} L.},
+  title     = {Forecasting {PM2.5} levels in {S}antiago de {C}hile using
+               deep learning neural networks},
+  journal   = {Urban Climate},
+  year      = {2021},
+  volume    = {38},
+  pages     = {100906},
+  doi       = {10.1016/j.uclim.2021.100906}
+}
+
+@article{stafoggia2019estimation,
+  author    = {Stafoggia, Massimo and Bellander, Tom and Bucci, Simone
+               and Davoli, Marina and {de Hoogh}, Kees and {De' Donato},
+               Francesca and Gariazzo, Claudio and Lyapustin, Alexei
+               and Michelozzi, Paola and Renzi, Matteo and Scortichini,
+               Matteo and Shtein, Alexandra and Viegi, Giovanni and
+               Kloog, Itai and Schwartz, Joel},
+  title     = {Estimation of daily {PM10} and {PM2.5} concentrations in
+               {I}taly, 2013--2015, using a spatiotemporal land-use
+               random-forest model},
+  journal   = {Environment International},
+  year      = {2019},
+  volume    = {124},
+  pages     = {170--179},
+  doi       = {10.1016/j.envint.2019.01.016}
+}
+
+% ── Short-horizon PM2.5 forecasting baselines ─────────────────────────────
+
+@article{mahajan2018shortterm,
+  author    = {Mahajan, Sachit and Chen, Ling-Jyh and Tsai, Tzu-Chieh},
+  title     = {Short-term {PM2.5} forecasting using exponential smoothing
+               method: a comparative analysis},
+  journal   = {Sensors},
+  year      = {2018},
+  volume    = {18},
+  number    = {10},
+  pages     = {3223},
+  doi       = {10.3390/s18103223}
+}
+
+% ── ML reproducibility ────────────────────────────────────────────────────
+
+@article{pineau2021improving,
+  author    = {Pineau, Joelle and Vincent-Lamarre, Philippe and Sinha, Koustuv
+               and Larivi{\`e}re, Vincent and Beygelzimer, Alina and
+               {d'Alch{\'e}-Buc}, Florence and Fox, Emily and
+               Larochelle, Hugo},
+  title     = {Improving reproducibility in machine learning research
+               ({A} report from the {NeurIPS} 2019 reproducibility program)},
+  journal   = {Journal of Machine Learning Research},
+  year      = {2021},
+  volume    = {22},
+  number    = {164},
+  pages     = {1--20},
+  url       = {https://jmlr.org/papers/v22/20-303.html}
+}
+
+% ── Software documentation ────────────────────────────────────────────────
+
+@manual{sensirion2023sps30,
+  author       = {{Sensirion AG}},
+  title        = {Datasheet {SPS30}: Particulate Matter Sensor for
+                  Air Quality Monitoring and Control},
+  organization = {Sensirion AG},
+  address      = {St{\"a}fa, Switzerland},
+  year         = {2023},
+  note         = {Version 2.0, June 2023},
+  url          = {https://sensirion.com/media/documents/8600FF88/64A3B8D6/Sensirion_PM_Sensors_Datasheet_SPS30.pdf}
+}
+
+@misc{astral2024uv,
+  author       = {{Astral}},
+  title        = {{uv}: An Extremely Fast {Python} Package and Project Manager},
+  year         = {2024},
+  howpublished = {Software documentation},
+  url          = {https://docs.astral.sh/uv/}
+}
+
+% ── Almaty-specific studies ───────────────────────────────────────────────
+
+@article{Kerimray2020,
+  author    = {Kerimray, Aiymgul and Azbanbayev, Ernur and Kenessov, Bulat
+               and Plotitsyn, Pavel and Alimbayeva, Dinara and Karaca, Ferhat},
+  title     = {Spatiotemporal variations and contributing factors of air
+               pollutants in {Almaty}, {Kazakhstan}},
+  journal   = {Aerosol and Air Quality Research},
+  year      = {2020},
+  volume    = {20},
+  number    = {6},
+  pages     = {1340--1352},
+  doi       = {10.4209/aaqr.2019.09.0464}
+}
+
+@article{Tursumbayeva2022,
+  author    = {Tursumbayeva, Madina and Kerimray, Aiymgul and Karaca, Ferhat
+               and Permadi, Didin Agustian},
+  title     = {Planetary boundary layer and its relationship with {PM2.5}
+               concentrations in {Almaty}, {Kazakhstan}},
+  journal   = {Aerosol and Air Quality Research},
+  year      = {2022},
+  volume    = {22},
+  pages     = {210294},
+  doi       = {10.4209/aaqr.210294}
+}
+
+@techreport{WorldBank2022almaty,
+  author      = {{World Bank}},
+  title       = {Clean Air and Cool Planet, Volume {II}: Integrated Air
+                 Quality Management and Greenhouse Gas Reduction for
+                 {Almaty} and {Nur-Sultan}},
+  institution = {World Bank},
+  year        = {2022},
+  address     = {Washington, DC},
+  url         = {https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099920008292227204/p1708700f4b6f30f0bf1a05fe6c088bdd2}
+}
+
+% ── Central Asian / comparative city studies ─────────────────────────────
+
+@article{Isaev2022,
+  author    = {Isaev, Eldiiar and Ajikeev, Bakyt and Shamyrkanov, Ulan
+               and Kalnur, Khaibulla and Maisalbek, Kaliyev and Sidle, Roy C.},
+  title     = {Impact of climate change and air pollution forecasting
+               using machine learning techniques in {Bishkek}},
+  journal   = {Aerosol and Air Quality Research},
+  year      = {2022},
+  volume    = {22},
+  pages     = {210336},
+  doi       = {10.4209/aaqr.210336}
+}
+
+% ── LCS long-term performance ─────────────────────────────────────────────
+
+@article{Sayahi2019,
+  author    = {Sayahi, Tofigh and Butterfield, Ashley and Kelly, Kerry E.},
+  title     = {Long-term field evaluation of the {Plantower PMS} low-cost
+               particulate matter sensors},
+  journal   = {Environmental Pollution},
+  year      = {2019},
+  volume    = {245},
+  pages     = {932--940},
+  doi       = {10.1016/j.envpol.2018.11.065}
+}
+
+@article{Kosmopoulos2020,
+  author    = {Kosmopoulos, George and Salamalikis, Vasileios and Pandis,
+               Spyros N. and Yannopoulos, Panagiotis and Bloutsos,
+               Alexandros A. and Kazantzidis, Andreas},
+  title     = {Low-cost sensors for measuring airborne particulate matter:
+               field evaluation and calibration at a South-{E}astern
+               {E}uropean site},
+  journal   = {Science of the Total Environment},
+  year      = {2020},
+  volume    = {748},
+  pages     = {141396},
+  doi       = {10.1016/j.scitotenv.2020.141396}
+}
+
+% ── Deep learning architectures ───────────────────────────────────────────
+
+@article{Ding2021,
+  author    = {Ding, Chuanwen and Wang, Gang and Zhang, Xiaomin and
+               Liu, Quan and Liu, Xin},
+  title     = {A hybrid {CNN-LSTM} model for predicting {PM2.5} in
+               {Beijing} based on spatiotemporal correlation},
+  journal   = {Environmental and Ecological Statistics},
+  year      = {2021},
+  volume    = {28},
+  number    = {3},
+  pages     = {503--522},
+  doi       = {10.1007/s10651-021-00501-8}
+}
+
+% ── Gradient boosting foundations ────────────────────────────────────────
+
+@article{Friedman2001GBM,
+  author    = {Friedman, Jerome H.},
+  title     = {Greedy function approximation: a gradient boosting machine},
+  journal   = {The Annals of Statistics},
+  year      = {2001},
+  volume    = {29},
+  number    = {5},
+  pages     = {1189--1232},
+  doi       = {10.1214/aos/1013203451}
+}
+
+% ── CTM post-processing / downscaling ────────────────────────────────────
+
+@article{Wang2016CTM,
+  author    = {Wang, Meng and Sampson, Paul D. and Hu, Jianlin and
+               Kleeman, Michael and Keller, Joshua P. and Olives, Casey
+               and Szpiro, Adam A. and Vedal, Sverre and Kaufman, Joel D.},
+  title     = {Combining land-use regression and chemical transport modeling
+               in a spatiotemporal geostatistical model for ozone and
+               {PM$_{2.5}$}},
+  journal   = {Environmental Science \& Technology},
+  year      = {2016},
+  volume    = {50},
+  number    = {10},
+  pages     = {5111--5118},
+  doi       = {10.1021/acs.est.5b06001}
+}
+
+% ── Spatial interpolation benchmark ──────────────────────────────────────
+
+@article{Wong2004Interpolation,
+  author    = {Wong, David W. and Yuan, Lester and Perlin, Susan A.},
+  title     = {Comparison of spatial interpolation methods for the estimation
+               of air quality data},
+  journal   = {Journal of Exposure Analysis and Environmental Epidemiology},
+  year      = {2004},
+  volume    = {14},
+  number    = {5},
+  pages     = {404--415},
+  doi       = {10.1038/sj.jea.7500338}
+}
+
+% ── AQ communication / dashboard usability ───────────────────────────────
+
+@article{Wu2021AQICommunication,
+  author    = {Wu, Yuheng and Zhang, Lin and Wang, Jilong and Mou, Yi},
+  title     = {Communicating air quality index information: effects of
+               different styles on individuals' risk perception and
+               precaution intention},
+  journal   = {International Journal of Environmental Research and
+               Public Health},
+  year      = {2021},
+  volume    = {18},
+  number    = {19},
+  pages     = {10542},
+  doi       = {10.3390/ijerph181910542}
+}
+
+% ── ML vs DL comparison for AQ ───────────────────────────────────────────
+
+@article{Ayus2023Comparison,
+  author    = {Ayus, Ishan and Natarajan, Narayanan and Gupta, Deepak},
+  title     = {Comparison of machine learning and deep learning techniques
+               for the prediction of air pollution: a case study from
+               {China}},
+  journal   = {Asian Journal of Atmospheric Environment},
+  year      = {2023},
+  volume    = {17},
+  number    = {1},
+  pages     = {4},
+  doi       = {10.1007/s44273-023-00005-w}
+}
