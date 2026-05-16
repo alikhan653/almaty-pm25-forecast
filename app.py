@@ -265,9 +265,14 @@ OTHER_CITIES = [
 ]
 
 
-@st.cache_data(ttl=REFRESH_SEC * 5)
+@st.cache_data(ttl=300)
 def fetch_city_stations(lat: float, lon: float) -> pd.DataFrame:
-    """Fetch current PM2.5 per-station for any city coordinates."""
+    """Fetch station locations for any city.
+
+    Strategy: one fast /locations call returns all station lat/lon.
+    Then fetch PM2.5 values from the 10 most-recently-active sensors only.
+    All stations appear on the map; only the sample gets PM2.5 colours.
+    """
     key = _openaq_key()
     if not key:
         return pd.DataFrame()
@@ -286,61 +291,62 @@ def fetch_city_stations(lat: float, lon: float) -> pd.DataFrame:
     except Exception:
         return pd.DataFrame()
 
-    now           = pd.Timestamp.now("UTC")
-    active_cutoff = now - pd.Timedelta(hours=48)   # accept sensors active in last 48 h
-    data_cutoff   = now - pd.Timedelta(hours=48)
-    rows          = []
+    if not locations:
+        return pd.DataFrame()
 
-    # Sort by most recently active first
+    now = pd.Timestamp.now("UTC")
+    data_from = (now - pd.Timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    data_to   = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # Sort most-recently-active first
     locations.sort(
         key=lambda l: (l.get("datetimeLast") or {}).get("utc") or "2000-01-01",
         reverse=True,
     )
 
-    for loc in locations[:60]:
+    # Step 1: collect ALL station rows with pm25=None (fast, no extra API calls)
+    rows = []
+    sensor_sample = []  # (sid, name) for the top-10 active sensors
+
+    for loc in locations:
         coords = loc.get("coordinates") or {}
         slat   = coords.get("latitude")
         slon   = coords.get("longitude")
         if slat is None or slon is None:
             continue
         name = loc.get("name") or loc.get("locality") or "Unknown"
+        rows.append({"name": name, "lat": slat, "lon": slon, "pm25": None})
 
-        last_dt_str = (loc.get("datetimeLast") or {}).get("utc")
-        if last_dt_str and pd.to_datetime(last_dt_str, utc=True) < active_cutoff:
+        if len(sensor_sample) < 10:
+            for s in (loc.get("sensors") or []):
+                if isinstance(s, dict) and (s.get("parameter") or {}).get("id") == 2:
+                    sensor_sample.append((s["id"], name, slat, slon))
+                    break
+
+    # Step 2: fetch PM2.5 for the sample of 10 sensors
+    pm25_by_name: dict[str, list[float]] = {}
+    for sid, sname, _, _ in sensor_sample:
+        try:
+            mr = requests.get(
+                f"{_OPENAQ_BASE}/sensors/{sid}/hours",
+                headers=headers,
+                params={"datetime_from": data_from, "datetime_to": data_to, "limit": 6},
+                timeout=8,
+            )
+            if mr.status_code != 200:
+                continue
+            vals = [m["value"] for m in mr.json().get("results", [])
+                    if isinstance(m, dict) and m.get("value") is not None
+                    and 0 <= m["value"] <= 500]
+            if vals:
+                pm25_by_name.setdefault(sname, []).extend(vals)
+        except Exception:
             continue
 
-        for s in loc.get("sensors", []):
-            if not isinstance(s, dict):
-                continue
-            if (s.get("parameter") or {}).get("id") != 2:
-                continue
-            sid = s.get("id")
-            if not sid:
-                continue
-            try:
-                mr = requests.get(
-                    f"{_OPENAQ_BASE}/sensors/{sid}/hours",
-                    headers=headers,
-                    params={
-                        "datetime_from": data_cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        "datetime_to":   now.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        "limit": 6,
-                    },
-                    timeout=10,
-                )
-                if mr.status_code != 200:
-                    continue
-                vals = [m["value"] for m in mr.json().get("results", [])
-                        if isinstance(m, dict) and m.get("value") is not None
-                        and 0 <= m["value"] <= 500]
-                if not vals:
-                    # Fallback: add station at grey (pm25=0) so map still shows it
-                    rows.append({"name": name, "lat": slat, "lon": slon, "pm25": None})
-                    continue
-                rows.append({"name": name, "lat": slat, "lon": slon,
-                             "pm25": float(np.median(vals))})
-            except Exception:
-                continue
+    # Step 3: patch PM2.5 values into the rows that we sampled
+    for row in rows:
+        if row["name"] in pm25_by_name:
+            row["pm25"] = float(np.median(pm25_by_name[row["name"]]))
 
     if not rows:
         return pd.DataFrame()
