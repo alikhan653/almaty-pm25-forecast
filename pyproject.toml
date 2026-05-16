@@ -5,7 +5,9 @@ description = "Short-term PM2.5 forecasting for Almaty using open low-cost senso
 requires-python = ">=3.11"
 dependencies = [
     "folium>=0.20.0",
+    "jupyter>=1.1.1",
     "matplotlib>=3.10.9",
+    "nbconvert>=7.17.1",
     "numpy>=2.4.4",
     "openaq>=0.7.0",
     "pandas>=3.0.2",
@@ -13,7 +15,9 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "requests>=2.33.1",
     "scikit-learn>=1.8.0",
+    "seaborn>=0.13.2",
     "streamlit>=1.56.0",
+    "streamlit-folium>=0.27.2",
     "xgboost>=3.2.0",
 ]
 
